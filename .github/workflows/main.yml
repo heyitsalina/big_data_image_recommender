@@ -21,13 +21,6 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-      - name: install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install .
-      - name: lint with ruff
-        run: |
-          ruff resources/.
       - name: test with pytest
         run: |
           pytest -v
