@@ -75,5 +75,10 @@ if __name__ == "__main__":
         metadata = get_image_metadata(image_path)
         save_metadata_to_db(metadata)
 
+    # implement a loop to feed 1000 images into the metadata database
+    
+    # Make a database with just the images and put the same 1000 images there
+    
+    # 
 # close database connection in order to prevent any issues
 conn.close()
