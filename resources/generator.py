@@ -9,6 +9,8 @@
 import os
 import sqlite3
 from PIL import Image
+import numba
+import tqdm
 
 # create the database in order to load the metadata through sqlite
 conn = sqlite3.connect('image_metadata.db')
@@ -34,8 +36,8 @@ if not os.path.exists('image_metadata.db'):
 # ''')
 # conn.commit()
 
+# @numba.jit() --> numba is more appropriate for numerical operations, less for filepath and string operations
 def image_generator(directory):
-
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(directory):
         for file in files:
@@ -67,17 +69,34 @@ def save_metadata_to_db(metadata):
     conn.commit()
 
 if __name__ == "__main__":
+    
     # the directory (IMMER VON DER FESTPLATTE ABHÄNGIG UND DESSEN GERÄT)
-    image_directory = 'F:\data\image_data'
+    image_directory = 'D:\data\image_data'
 
     # generate image files and save their metadata to the database
+    # for image_path in image_generator(image_directory):
+        # metadata = get_image_metadata(image_path)
+        # save_metadata_to_db(metadata)
+
+    # delete all unnecessary data in the table
+    curs.execute('DELETE FROM metadata')
+    conn.commit()
+    
+    #TODO: implement a loop to feed 1000 images into the metadata database
+    batchsize = 1000
+    pbar = tqdm.tqdm(total=batchsize)
+    counter = 0
     for image_path in image_generator(image_directory):
         metadata = get_image_metadata(image_path)
         save_metadata_to_db(metadata)
-
-    # implement a loop to feed 1000 images into the metadata database
+        pbar.update(1)
+        counter += 1
+        if counter == batchsize:
+            break
+            
+    pbar.close()
     
-    # Make a database with just the images and put the same 1000 images there
+    #TODO: Make a database with just the images and put the same 1000 images there
     
     # 
 # close database connection in order to prevent any issues
