@@ -1,3 +1,6 @@
+from similarity1 import all
+
+
 def test_histogram_similarity():
     image1 = load_image('our_path_to_image1.jpg')
     image2 = load_image('our_path_to_image2.jpg')
