@@ -4,14 +4,15 @@
 import numpy as np
 import sqlite3
 from scipy.spatial import distance
-from precompute_histograms import calculate_histogram, load_image
+from histograms import calculate_histogram, load_image
 
-def compare_embeddings_cosine(emb1, emb2):
-    return distance.cosine(emb1, emb2)
+def compare_embeddings_cosine(v1, v2):
+    return distance.cosine(v1, v2)
 
 def get_histograms_from_db(db_path):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
+    # HISTOGRAM DATABASE - TO DO !!!
     c.execute('SELECT image_id, histogram FROM histograms')
     histograms = [(row[0], np.fromstring(row[1], sep=',')) for row in c.fetchall()]
     conn.close()
@@ -20,11 +21,13 @@ def get_histograms_from_db(db_path):
 def get_embeddings_from_db(db_path):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
+    # EMBEDDINGS DATABASE - TO DO !!!
     c.execute('SELECT image_id, embedding FROM embeddings')
     embeddings = [(row[0], np.fromstring(row[1], sep=',')) for row in c.fetchall()]
     conn.close()
     return embeddings
 
+# THE ACTUAL SIMILARITY SEARCH MEASURE FOR BOTH COLOR BASED AND IMAGE EMBEDDING
 def find_similar_images(input_image_path, db_path, top_n=5, method='cosine', feature='histogram'):
     if feature == 'histogram':
         input_image = load_image(input_image_path)
