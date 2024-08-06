@@ -21,7 +21,7 @@ def calculate_histogram(image, bins=(8, 8, 8)):
 
 def store_in_db(image_id, histogram, embedding, db_path):
     """
-    Store the histogram and embedding in the database.
+    Store the histogram and embedding in our database.
     
     Args:
         image_id (str): Unique identifier for the image.
@@ -59,5 +59,3 @@ def preprocess_images(image_directory, db_path):
         except Exception as e:
             print(f"Error processing image {image_path}: {e}")
 
-# Example usage:
-# preprocess_images('path/to/images', 'path/to/database.db')

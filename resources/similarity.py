@@ -50,6 +50,3 @@ def find_similar_images(input_image_path, db_path, top_n=5, method='cosine', fea
         similarities.sort(key=lambda x: x[1])
     return [sim[0] for sim in similarities[:top_n]]
 
-# Example usage:
-# similar_images = find_similar_images('path/to/input/image.jpg', 'path/to/database.db', top_n=5, method='cosine', feature='histogram')
-# print(similar_images)
