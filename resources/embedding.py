@@ -15,9 +15,6 @@ def cos_similarity(v1, v2):
     return cosine_similarity([v1], [v2])[0][0]
 
 
-def get_embedding():
-    pass
-
 if __name__ == "__main__":
     # get the number of vectors 
     # create an empty matrix using numpy
