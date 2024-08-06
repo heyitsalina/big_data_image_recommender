@@ -14,7 +14,6 @@ def manhatten_distance(v1, v2):
 def cos_similarity(v1, v2):
     return cosine_similarity([v1], [v2])[0][0]
 
-
 if __name__ == "__main__":
     # get the number of vectors 
     # create an empty matrix using numpy
