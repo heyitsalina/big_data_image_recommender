@@ -20,14 +20,14 @@ def calculate_histogram(image, bins=(8, 8, 8)):
 def compare_histograms_cosine(hist1, hist2):
     return distance.cosine(hist1, hist2)
 
-def compare_histograms_intersection(hist1, hist2):
-    minima = np.minimum(hist1, hist2)
-    return np.true_divide(np.sum(minima), np.sum(hist2))
+# def compare_histograms_intersection(hist1, hist2):
+#     minima = np.minimum(hist1, hist2)
+#     return np.true_divide(np.sum(minima), np.sum(hist2))
 
-def compare_histograms_emd(hist1, hist2):
-    hist1_cdf = np.cumsum(hist1)
-    hist2_cdf = np.cumsum(hist2)
-    return np.sum(np.abs(hist1_cdf - hist2_cdf))
+# def compare_histograms_emd(hist1, hist2):
+#     hist1_cdf = np.cumsum(hist1)
+#     hist2_cdf = np.cumsum(hist2)
+#     return np.sum(np.abs(hist1_cdf - hist2_cdf))
 
 def get_histograms_from_db(db_path):
     conn = sqlite3.connect(db_path)
