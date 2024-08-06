@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 import sqlite3
 from scipy.spatial import distance
+from embedding import resnet_50
 
 
 def load_image(image_path):
@@ -64,31 +65,25 @@ def find_similar_images(input_image_path, db_path, top_n=5, method='cosine', fea
                 raise ValueError(f"Unknown method: {method}")
             similarities.append((image_id, dist))
 
-    elif feature == 'embedding':
-        from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input
-        from tensorflow.keras.preprocessing import image
-        from tensorflow.keras.models import Model
-        
-        model = VGG16(weights='imagenet', include_top=False)
-        embedding_model = Model(inputs=model.input, outputs=model.layers[-1].output)
-        
-        img = image.load_img(input_image_path, target_size=(224, 224))
-        img_data = image.img_to_array(img)
-        img_data = np.expand_dims(img_data, axis=0)
-        img_data = preprocess_input(img_data)
-        input_embedding = embedding_model.predict(img_data).flatten()
-        
-        embeddings = get_embeddings_from_db(db_path)
+    # elif feature == 'embedding':
 
-        similarities = []
-        for image_id, embedding in embeddings.items():
-            if method == 'cosine':
-                dist = distance.cosine(input_embedding, embedding)
-            elif method == 'euclidean':
-                dist = distance.euclidean(input_embedding, embedding)
-            else:
-                raise ValueError(f"Unknown method: {method}")
-            similarities.append((image_id, dist))
+    #     img = image.load_img(input_image_path, target_size=(224, 224))
+    #     img_data = image.img_to_array(img)
+    #     img_data = np.expand_dims(img_data, axis=0)
+    #     img_data = preprocess_input(img_data)
+    #     #input_embedding = embedding_model.predict(img_data).flatten()
+        
+    #     embeddings = get_embeddings_from_db(db_path)
+
+    #     similarities = []
+    #     for image_id, embedding in embeddings.items():
+    #         if method == 'cosine':
+    #             dist = distance.cosine(input_embedding, embedding)
+    #         elif method == 'euclidean':
+    #             dist = distance.euclidean(input_embedding, embedding)
+    #         else:
+    #             raise ValueError(f"Unknown method: {method}")
+    #         similarities.append((image_id, dist))
 
     else:
         raise ValueError(f"Unknown feature: {feature}")
