@@ -3,6 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import torch
 import torch.nn as nn
 from torchvision import models, transforms
+from PIL import Image
 
 
 def euclidean_distance(v1, v2):
@@ -20,6 +21,8 @@ def preprocess(img):
     Preprocess the given image to the format required by the model.
     """
     
+    img = Image.open(img).convert('RGB')
+    
     try:
         # Define the image transformations (resize, center crop, and normalization)
         transform = transforms.Compose([
@@ -29,11 +32,12 @@ def preprocess(img):
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
         
-        preprocessed_img = transform(img)
 
-        if preprocessed_img.mode != 'RGB':
-            preprocessed_img = preprocessed_img.convert('RGB')
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
             
+        preprocessed_img = transform(img)
+        
         return preprocessed_img.unsqueeze(0)
     
     except Exception as e:
