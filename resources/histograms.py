@@ -1,8 +1,22 @@
 import cv2
 import numpy as np
 import sqlite3
+from PIL import Image
+import os
 from generator import get_image_paths
 from embedding import get_embedding
+
+
+def load_image(image_path):
+    """
+    Load an image from the given path and return it.
+    If an image is grayscale, convert it to RGB
+    """
+    image = cv2.imread(image_path)
+    
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    
+    return np.array(image_rgb)
 
 def calculate_histogram(image, bins=(8, 8, 8)):
     """
@@ -54,7 +68,7 @@ def preprocess_images(image_directory, db_path):
                 continue
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             histogram = calculate_histogram(image_rgb)
-            embedding = get_embedding(image_path)
+            # embedding = get_embedding(image_path)
             store_in_db(image_id, histogram, embedding, db_path)
         except Exception as e:
             print(f"Error processing image {image_path}: {e}")
