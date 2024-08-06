@@ -33,7 +33,7 @@ def main(input_image_path, db_path, top_n, method, feature):
     show_images(similar_images, input_image_path)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Image Recommender System')
+    parser = argparse.ArgumentParser(description='Big Data Image Recommender')
     parser.add_argument('input_image', type=str, help='Path to the input image')
     parser.add_argument('db_path', type=str, help='Path to the database')
     parser.add_argument('--top_n', type=int, default=5, help='Number of top similar images to retrieve')
