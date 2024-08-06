@@ -6,8 +6,6 @@ import sqlite3
 from scipy.spatial import distance
 from histograms import calculate_histogram, load_image
 
-def compare_embeddings_cosine(v1, v2):
-    return distance.cosine(v1, v2)
 
 def get_histograms_from_db(db_path):
     conn = sqlite3.connect(db_path)
