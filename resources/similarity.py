@@ -1,5 +1,5 @@
 # Similarity 1 and 2 
-# Similarity 1 - color based and Similarity 2 - xxx
+# Similarity 1 - color based, Similarity 2 - Image Embedding and Similarity 3 - TO-DO !
 
 import numpy as np
 import sqlite3
