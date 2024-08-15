@@ -46,7 +46,7 @@ def preprocess(img):
 
 
 
-def resnet_50(img, device):
+def get_embedding(img, device):
     """
     Extract the embedding of an image tensor using the pre-trained resnet50 model and return a numpy array.
     """
