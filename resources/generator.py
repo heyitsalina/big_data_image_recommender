@@ -10,44 +10,72 @@ import os
 import sqlite3
 from PIL import Image
 import numba
-import tqdm
-
+import pickle
+from tqdm import tqdm
 
 
 # @numba.jit() --> numba is more appropriate for numerical operations, less for filepath and string operations
 
 # TODO: Add starting point architecture to resume generating from the last id in the database
-def image_generator(directory):
-    # generator that runs image files from our given directory as the parameter
+
+def load_checkpoint(checkpoint_file):
+    if os.path.exists(checkpoint_file):
+        with open(checkpoint_file, 'rb') as f:
+            return pickle.load(f) # pickle file for checkpoint loading
+    return None
+
+def save_checkpoint(checkpoint_file, last_processed_file):
+    with open(checkpoint_file, 'wb') as f:
+        pickle.dump(last_processed_file, f) # saving of the checkpoint loading-pickle file 
+
+def count_images(directory):
+    # function to count the total number of image files in the given directors (needed for tqdm progress bar)
+    total_images = 0
     for root, _, files in os.walk(directory):
+        total_images += len([file for file in files if file.lower().endswith(('png', 'jpg', 'jpeg'))])
+    return total_images
+
+def image_generator(directory, checkpoint_file='checkpoint.pkl'):
+    # Generate file paths of images from the directory, with checkpointing and tqdm progress tracking
+
+    last_processed_file = load_checkpoint(checkpoint_file)
+    resume_processing = False if last_processed_file is None else True
+
+    total_images = count_images(directory)  # Count total images for the progress bar
+    pbar = tqdm(total=total_images, desc="Processing images")  # Initialize progress bar
+
+    if last_processed_file:
+        # Find the index of the last processed file to set the correct progress bar position
+        pbar.n = sum([1 for root, _, files in os.walk(directory) for file in files 
+                      if os.path.join(root, file).lower().endswith(('png', 'jpg', 'jpeg')) and 
+                      os.path.join(root, file) <= last_processed_file])
+        pbar.refresh()
+
+    for root, _, files in os.walk(directory):
+        files.sort()  # Sort files to ensure consistent ordering
+
         for file in files:
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
-                # TODO: Change yield to loaded PIL image
-                yield os.path.join(root, file)
+                file_path = os.path.join(root, file)
 
-def get_image_metadata(image_path):
+                if resume_processing:
+                    if file_path == last_processed_file:
+                        resume_processing = False  # Found the last processed file, resume processing
+                    continue
 
-    # get the metadata of all the images we need through the image_path we have
-    with Image.open(image_path) as img:
-        metadata = {
-            'filename': os.path.basename(image_path),
-            'format': img.format,
-            'mode': img.mode,
-            'width': img.width,
-            'height': img.height,
-            'size': os.path.getsize(image_path)
-        }
-    return metadata
+                # Save the current file path as a checkpoint
+                save_checkpoint(checkpoint_file, file_path)
 
-def save_metadata_to_db(metadata):
+                yield file_path  # Yield the file path instead of the image
 
-    # save the metadata from the images to the SQLite database.
-    curs.execute('''
-        INSERT INTO metadata (filename, format, mode, width, height, size)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (metadata['filename'], metadata['format'], metadata['mode'], 
-         metadata['width'], metadata['height'], metadata['size']))
-    conn.commit()
+                pbar.update(1)  # Update the progress bar
+
+    pbar.close()  # Close the progress bar
+
+    # Once all files are processed, remove the checkpoint file
+    if os.path.exists(checkpoint_file):
+        os.remove(checkpoint_file)
+
 
 def save_image_to_db(image_path):
 
