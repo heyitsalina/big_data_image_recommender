@@ -36,22 +36,23 @@ def count_images(directory):
     return total_images
 
 def image_generator(directory, checkpoint_file='checkpoint.pkl'):
-    # the main generator - loads the last processed file from the checkpoint
+    # Generate file paths of images from the directory, with checkpointing and tqdm progress tracking
+
     last_processed_file = load_checkpoint(checkpoint_file)
     resume_processing = False if last_processed_file is None else True
 
-    total_images = count_images(directory)  # counts total images for the progress bar
-    pbar = tqdm(total=total_images, desc="Processing images")  # initialize progress bar
+    total_images = count_images(directory)  # Count total images for the progress bar
+    pbar = tqdm(total=total_images, desc="Processing images")  # Initialize progress bar
 
     if last_processed_file:
-        # finds the index of the last processed file to set the correct progress bar position
+        # Find the index of the last processed file to set the correct progress bar position
         pbar.n = sum([1 for root, _, files in os.walk(directory) for file in files 
                       if os.path.join(root, file).lower().endswith(('png', 'jpg', 'jpeg')) and 
                       os.path.join(root, file) <= last_processed_file])
         pbar.refresh()
 
     for root, _, files in os.walk(directory):
-        files.sort()  # sort files to ensure consistent ordering
+        files.sort()  # Sort files to ensure consistent ordering
 
         for file in files:
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
@@ -59,16 +60,13 @@ def image_generator(directory, checkpoint_file='checkpoint.pkl'):
 
                 if resume_processing:
                     if file_path == last_processed_file:
-                        resume_processing = False  # found the last processed file, resume processing
+                        resume_processing = False  # Found the last processed file, resume processing
                     continue
 
-                # Load the image with PIL
-                image = Image.open(file_path)
-
-                # Save the current file as a checkpoint
+                # Save the current file path as a checkpoint
                 save_checkpoint(checkpoint_file, file_path)
 
-                yield image  
+                yield file_path  # Yield the file path instead of the image
 
                 pbar.update(1)  # Update the progress bar
 
