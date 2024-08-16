@@ -69,7 +69,7 @@ def image_generator(directory, checkpoint_file='checkpoint.pkl'):
                 save_checkpoint(checkpoint_file, file_path)
 
                 yield image  
-                
+
                 pbar.update(1)  # Update the progress bar
 
     pbar.close()  # Close the progress bar
@@ -78,30 +78,6 @@ def image_generator(directory, checkpoint_file='checkpoint.pkl'):
     if os.path.exists(checkpoint_file):
         os.remove(checkpoint_file)
 
-
-def get_image_metadata(image_path):
-
-    # get the metadata of all the images we need through the image_path we have
-    with Image.open(image_path) as img:
-        metadata = {
-            'filename': os.path.basename(image_path),
-            'format': img.format,
-            'mode': img.mode,
-            'width': img.width,
-            'height': img.height,
-            'size': os.path.getsize(image_path)
-        }
-    return metadata
-
-def save_metadata_to_db(metadata):
-
-    # save the metadata from the images to the SQLite database.
-    curs.execute('''
-        INSERT INTO metadata (filename, format, mode, width, height, size)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (metadata['filename'], metadata['format'], metadata['mode'], 
-         metadata['width'], metadata['height'], metadata['size']))
-    conn.commit()
 
 def save_image_to_db(image_path):
 
