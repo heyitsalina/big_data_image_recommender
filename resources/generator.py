@@ -15,11 +15,14 @@ import tqdm
 
 
 # @numba.jit() --> numba is more appropriate for numerical operations, less for filepath and string operations
+
+# TODO: Add starting point architecture to resume generating from the last id in the database
 def image_generator(directory):
     # generator that runs image files from our given directory as the parameter
     for root, _, files in os.walk(directory):
         for file in files:
             if file.lower().endswith(('png', 'jpg', 'jpeg')):
+                # TODO: Change yield to loaded PIL image
                 yield os.path.join(root, file)
 
 def get_image_metadata(image_path):
@@ -69,11 +72,12 @@ def reset_table(table):
     conn.commit()
 
 
-def get_img_rgb(image_path):
+""" def get_img_rgb(image_path):
     
     img = Image.open(image_path)
     
     img.convert("RGB")
+    width, height = img.size
     
     red = []
     green = []
@@ -84,17 +88,14 @@ def get_img_rgb(image_path):
             red.append(r)
             green.append(g)
             blue.append(b)
-            curs.execute(
-                """
-                INSERT INTO metadata (r, g, b)
-                VALUES (?, ?, ?)
-            """,
-                (r, g, b),
+            curs.execute("INSERT INTO metadata (red, green, blue) VALUES (?, ?, ?)",
+                (red, green, blue),
             )
-            conn.commit()
+            conn.commit() """
 
 # implement a loop to feed 1000 images into the metadata database
 # TODO: Maybe we could just load both at the same time instead of doing either or
+# TODO: Add functionality to add histograms and embeddings to the database
 def insert_into_db(table, batchsize=1000):
     pbar = tqdm.tqdm(total=batchsize)
     counter = 0
@@ -135,8 +136,8 @@ if __name__ == "__main__":
     # the directory (IMMER VON DER FESTPLATTE ABHÄNGIG UND DESSEN GERÄT)
     image_directory = 'D:\data\image_data'
 
-    # reset_table("metadata")
-    # insert_into_db("metadata")
+    reset_table("metadata")
+    insert_into_db("metadata")
     
     # close database connection in order to prevent any issues
     curs.close()
