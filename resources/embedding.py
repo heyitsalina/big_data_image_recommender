@@ -21,8 +21,6 @@ def preprocess(img):
     Preprocess the given image to the format required by the model.
     """
     
-    img = Image.open(img).convert('RGB')
-    
     try:
         # Define the image transformations (resize, center crop, and normalization)
         transform = transforms.Compose([
