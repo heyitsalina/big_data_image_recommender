@@ -3,7 +3,7 @@ import numpy as np
 import sqlite3
 from PIL import Image
 import os
-from generator import get_image_paths
+# from generator import get_image_paths
 from embedding import get_embedding
 
 
